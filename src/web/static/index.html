@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>off-context Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'spin-slow': 'spin 2s linear infinite',
+                        'pulse-soft': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    colors: {
+                        'gcp-blue': '#4285f4',
+                        'gcp-green': '#34a853',
+                        'gcp-yellow': '#fbbc04',
+                        'gcp-red': '#ea4335',
+                        'gcp-gray': '#5f6368'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-900">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gcp-blue rounded-full mb-6 shadow-lg">
+                <i data-lucide="brain-circuit" class="w-8 h-8 text-white"></i>
+            </div>
+            <h1 class="text-4xl font-normal text-gray-900 mb-4">
+                off-context Admin
+            </h1>
+            <p class="text-lg text-gray-600">Project Memory Management Console</p>
+            <div class="mt-6 inline-flex items-center px-4 py-3 bg-white rounded-lg shadow-sm border border-gray-200">
+                <i data-lucide="folder" class="w-5 h-5 text-gcp-blue mr-3"></i>
+                <div class="text-left">
+                    <p class="text-gray-900 font-medium" id="project-name">Loading...</p>
+                    <p class="text-gray-500 text-sm" id="project-path">Loading project path...</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Status Section -->
+        <div class="mb-12">
+            <div class="flex items-center mb-6">
+                <div class="w-6 h-6 bg-gcp-blue rounded-lg flex items-center justify-center mr-3">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-normal text-gray-900">System Status</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="status-grid">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gcp-blue rounded-lg flex items-center justify-center mr-4">
+                            <i data-lucide="link" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-medium text-gray-900 mb-1">Claude Hooks</h3>
+                            <p class="text-sm text-gray-600" id="hooks-status">
+                                <span class="inline-flex items-center">
+                                    <i data-lucide="loader-2" class="animate-spin w-4 h-4 mr-2 text-gcp-blue"></i>
+                                    Loading...
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gcp-green rounded-lg flex items-center justify-center mr-4">
+                            <i data-lucide="database" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-medium text-gray-900 mb-1">Database</h3>
+                            <p class="text-sm text-gray-600" id="database-status">
+                                <span class="inline-flex items-center">
+                                    <i data-lucide="loader-2" class="animate-spin w-4 h-4 mr-2 text-gcp-blue"></i>
+                                    Loading...
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gcp-yellow rounded-lg flex items-center justify-center mr-4">
+                            <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-medium text-gray-900 mb-1">Embeddings</h3>
+                            <p class="text-sm text-gray-600" id="embeddings-status">
+                                <span class="inline-flex items-center">
+                                    <i data-lucide="loader-2" class="animate-spin w-4 h-4 mr-2 text-gcp-blue"></i>
+                                    Loading...
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="mb-12">
+            <div class="flex items-center mb-6">
+                <div class="w-6 h-6 bg-gcp-green rounded-lg flex items-center justify-center mr-3">
+                    <i data-lucide="search" class="w-4 h-4 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-normal text-gray-900">Search Conversations</h2>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex-1">
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            placeholder="Search your conversations..." 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gcp-blue focus:border-transparent transition-all duration-200"
+                        />
+                    </div>
+                    <button 
+                        id="search-btn" 
+                        class="px-6 py-3 bg-gcp-blue text-white font-medium rounded-lg hover:bg-blue-600 transition-colors duration-200 shadow-sm flex items-center"
+                    >
+                        <i data-lucide="search" class="w-4 h-4 mr-2"></i>
+                        Search
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-4 text-sm">
+                    <label class="flex items-center text-gray-600">
+                        Results: 
+                        <select id="search-limit" class="ml-2 px-3 py-2 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gcp-blue">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </label>
+                </div>
+                
+                <div id="search-results" class="mt-6"></div>
+            </div>
+        </div>
+
+        <!-- Project Details Section -->
+        <div class="mb-12">
+            <div class="flex items-center mb-6">
+                <div class="w-6 h-6 bg-gcp-yellow rounded-lg flex items-center justify-center mr-3">
+                    <i data-lucide="info" class="w-4 h-4 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-normal text-gray-900">Project Details</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="project-details">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="mb-12">
+            <div class="flex items-center mb-6">
+                <div class="w-6 h-6 bg-gcp-red rounded-lg flex items-center justify-center mr-3">
+                    <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-normal text-gray-900">Management Actions</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gcp-blue rounded-lg flex items-center justify-center mr-4">
+                            <i data-lucide="play-circle" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900">Initialize Project</h3>
+                            <p class="text-sm text-gray-600">Set up off-context integration</p>
+                        </div>
+                    </div>
+                    <button 
+                        id="init-btn" 
+                        class="w-full px-4 py-2 bg-gcp-blue text-white font-medium rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center"
+                    >
+                        <i data-lucide="play-circle" class="w-4 h-4 mr-2"></i>
+                        Initialize Project
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mr-4">
+                            <i data-lucide="broom" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900">Clear Hooks</h3>
+                            <p class="text-sm text-gray-600">Remove hooks from this project only</p>
+                        </div>
+                    </div>
+                    <button 
+                        id="clear-btn" 
+                        class="w-full px-4 py-2 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors duration-200 flex items-center justify-center"
+                    >
+                        <i data-lucide="broom" class="w-4 h-4 mr-2"></i>
+                        Clear Project Hooks
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gcp-red rounded-lg flex items-center justify-center mr-4">
+                            <i data-lucide="trash-2" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900">Reset Memory</h3>
+                            <p class="text-sm text-gray-600">Delete all conversations and reset database</p>
+                        </div>
+                    </div>
+                    <button 
+                        id="reset-btn" 
+                        class="w-full px-4 py-2 bg-gcp-red text-white font-medium rounded-lg hover:bg-red-600 transition-colors duration-200 flex items-center justify-center"
+                    >
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
+                        Reset Memory Database
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="mb-12">
+            <div class="flex items-center mb-6">
+                <div class="w-6 h-6 bg-gcp-green rounded-lg flex items-center justify-center mr-3">
+                    <i data-lucide="download" class="w-4 h-4 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-normal text-gray-900">Export Data</h2>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex flex-col md:flex-row items-center gap-4 mb-6">
+                    <label class="flex items-center text-gray-600">
+                        Format:
+                        <select id="export-format" class="ml-3 px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gcp-blue">
+                            <option value="json">JSON</option>
+                            <option value="md">Markdown</option>
+                            <option value="txt">Text</option>
+                        </select>
+                    </label>
+                    <button 
+                        id="export-btn" 
+                        class="px-6 py-2 bg-gcp-green text-white font-medium rounded-lg hover:bg-green-600 transition-colors duration-200 shadow-sm flex items-center"
+                    >
+                        <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+                        Generate Export
+                    </button>
+                </div>
+                <div id="export-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div id="modal-content" class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Initialize Lucide icons after page load
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

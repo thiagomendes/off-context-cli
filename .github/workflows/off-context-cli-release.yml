@@ -1,0 +1,143 @@
+name: Off Context Cli Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.1)'
+        required: true
+        default: 'v1.0.1'
+        type: string
+      release_name:
+        description: 'Release name (optional)'
+        required: false
+        type: string
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        default: false
+        type: boolean
+      build_linux:
+        description: 'Build Linux version'
+        required: false
+        default: true
+        type: boolean
+      build_macos:
+        description: 'Build macOS version'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          matrix="{"
+          builds=()
+          
+          # Check if Linux build is enabled (default true for tag pushes)
+          if [[ "${{ github.event.inputs.build_linux }}" == "true" || ("${{ github.event_name }}" == "push" && "${{ github.event.inputs.build_linux }}" != "false") ]]; then
+            builds+=('{"os":"ubuntu-latest","target":"x86_64-unknown-linux-musl","artifact_name":"off-context-cli","asset_name":"off-context-linux.tar.gz"}')
+          fi
+          
+          # Check if macOS build is enabled (default true for tag pushes)
+          if [[ "${{ github.event.inputs.build_macos }}" == "true" || ("${{ github.event_name }}" == "push" && "${{ github.event.inputs.build_macos }}" != "false") ]]; then
+            builds+=('{"os":"macos-latest","target":"x86_64-apple-darwin","artifact_name":"off-context-cli","asset_name":"off-context-macos.tar.gz"}')
+          fi
+          
+          # Join builds with commas
+          IFS=','
+          matrix="\"include\":[${builds[*]}]}"
+          
+          echo "matrix={$matrix}" >> $GITHUB_OUTPUT
+          echo "Generated matrix: {$matrix}"
+
+  build:
+    name: Build and Release
+    needs: prepare
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        if [[ "${{ matrix.target }}" == "x86_64-unknown-linux-musl" ]]; then
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+        fi
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ matrix.target }}
+
+    - name: Build
+      run: cargo build --release --target ${{ matrix.target }}
+
+    - name: Debug and create tarball
+      run: |
+        echo "=== Debugging binary location ==="
+        echo "Looking for: ${{ matrix.artifact_name }}"
+        echo "Target: ${{ matrix.target }}"
+        echo ""
+        echo "Directory structure:"
+        find target -type f -name "*off-context*" || echo "No off-context files found"
+        echo ""
+        echo "All files in target/:"
+        ls -la target/ || echo "No target directory"
+        echo ""
+        echo "Checking specific paths:"
+        echo "1. target/${{ matrix.target }}/release/${{ matrix.artifact_name }}"
+        ls -la "target/${{ matrix.target }}/release/" || echo "Path 1 not found"
+        echo "2. target/release/${{ matrix.artifact_name }}"
+        ls -la "target/release/" || echo "Path 2 not found"
+        echo ""
+        
+        mkdir -p dist
+        # Handle different build output paths
+        if [ -f "target/${{ matrix.target }}/release/${{ matrix.artifact_name }}" ]; then
+          echo "Found binary at target/${{ matrix.target }}/release/${{ matrix.artifact_name }}"
+          cp target/${{ matrix.target }}/release/${{ matrix.artifact_name }} dist/off-context
+        elif [ -f "target/release/${{ matrix.artifact_name }}" ]; then
+          echo "Found binary at target/release/${{ matrix.artifact_name }}"
+          cp target/release/${{ matrix.artifact_name }} dist/off-context
+        else
+          echo "Binary not found in expected locations, searching..."
+          BINARY_PATH=$(find target -name "${{ matrix.artifact_name }}" -type f | head -1)
+          if [ -n "$BINARY_PATH" ]; then
+            echo "Found binary at: $BINARY_PATH"
+            cp "$BINARY_PATH" dist/off-context
+          else
+            echo "Binary ${{ matrix.artifact_name }} not found anywhere in target/"
+            exit 1
+          fi
+        fi
+        cd dist
+        tar -czf ${{ matrix.asset_name }} off-context
+
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.event.inputs.version || github.ref_name }}
+        name: ${{ github.event.inputs.release_name || github.event.inputs.version || github.ref_name }}
+        files: dist/${{ matrix.asset_name }}
+        prerelease: ${{ github.event.inputs.prerelease || false }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

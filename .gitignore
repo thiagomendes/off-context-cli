@@ -1,0 +1,76 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# off-context specific
+.off_context/
+*.off_context
+config.toml
+
+# Vector databases
+chroma_db/
+qdrant/
+*.db
+*.sqlite
+
+# Development
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Claude Code data (don't commit user conversations or settings)
+.claude/
+transcripts/
+conversations/
+chat_*.jsonl
+*.transcript
+
+# Release builds
+release/
+releases/
