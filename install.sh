@@ -113,7 +113,24 @@ else
     fi
 
     VERSION=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
-    DOWNLOAD_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | contains("linux")) | .browser_download_url')
+    # Detect architecture
+    ARCH=$(uname -m)
+    case $ARCH in
+        x86_64)
+            ARCH_SUFFIX="x86_64"
+            ;;
+        aarch64|arm64)
+            ARCH_SUFFIX="arm64"
+            ;;
+        *)
+            echo "❌ Unsupported architecture: $ARCH"
+            echo "Supported: x86_64, aarch64/arm64"
+            exit 1
+            ;;
+    esac
+    
+    echo "🔧 Detected architecture: $ARCH -> $ARCH_SUFFIX"
+    DOWNLOAD_URL=$(echo "$LATEST_RELEASE" | jq -r ".assets[] | select(.name | contains(\"linux-$ARCH_SUFFIX\")) | .browser_download_url")
 
     if [[ "$VERSION" == "null" || "$DOWNLOAD_URL" == "null" || -z "$VERSION" || -z "$DOWNLOAD_URL" ]]; then
         echo "❌ No GitHub releases found yet."
@@ -135,8 +152,8 @@ else
     cd "$TEMP_DIR"
 
     # Download and extract binary
-    curl -L -o off-context-linux.tar.gz "$DOWNLOAD_URL"
-    tar -xzf off-context-linux.tar.gz
+    curl -L -o "off-context-linux-$ARCH_SUFFIX.tar.gz" "$DOWNLOAD_URL"
+    tar -xzf "off-context-linux-$ARCH_SUFFIX.tar.gz"
 fi
 
 # Install binary

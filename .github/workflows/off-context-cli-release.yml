@@ -50,12 +50,14 @@ jobs:
           
           # Check if Linux build is enabled (default true for tag pushes)
           if [[ "${{ github.event.inputs.build_linux }}" == "true" || ("${{ github.event_name }}" == "push" && "${{ github.event.inputs.build_linux }}" != "false") ]]; then
-            builds+=('{"os":"ubuntu-latest","target":"x86_64-unknown-linux-musl","artifact_name":"off-context","asset_name":"off-context-linux.tar.gz"}')
+            builds+=('{"os":"ubuntu-latest","target":"x86_64-unknown-linux-musl","artifact_name":"off-context","asset_name":"off-context-linux-x86_64.tar.gz"}')
+            builds+=('{"os":"ubuntu-latest","target":"aarch64-unknown-linux-musl","artifact_name":"off-context","asset_name":"off-context-linux-arm64.tar.gz"}')
           fi
           
           # Check if macOS build is enabled (default true for tag pushes)
           if [[ "${{ github.event.inputs.build_macos }}" == "true" || ("${{ github.event_name }}" == "push" && "${{ github.event.inputs.build_macos }}" != "false") ]]; then
-            builds+=('{"os":"macos-latest","target":"x86_64-apple-darwin","artifact_name":"off-context","asset_name":"off-context-macos.tar.gz"}')
+            builds+=('{"os":"macos-latest","target":"x86_64-apple-darwin","artifact_name":"off-context","asset_name":"off-context-macos-x86_64.tar.gz"}')
+            builds+=('{"os":"macos-latest","target":"aarch64-apple-darwin","artifact_name":"off-context","asset_name":"off-context-macos-arm64.tar.gz"}')
           fi
           
           # Join builds with commas
@@ -81,6 +83,9 @@ jobs:
         if [[ "${{ matrix.target }}" == "x86_64-unknown-linux-musl" ]]; then
           sudo apt-get update
           sudo apt-get install -y musl-tools
+        elif [[ "${{ matrix.target }}" == "aarch64-unknown-linux-musl" ]]; then
+          sudo apt-get update
+          sudo apt-get install -y musl-tools gcc-aarch64-linux-gnu
         fi
 
     - name: Install Rust
@@ -89,7 +94,14 @@ jobs:
         targets: ${{ matrix.target }}
 
     - name: Build
-      run: cargo build --release --target ${{ matrix.target }}
+      run: |
+        if [[ "${{ matrix.target }}" == "aarch64-unknown-linux-musl" ]]; then
+          export CC_aarch64_unknown_linux_musl=aarch64-linux-gnu-gcc
+          export CXX_aarch64_unknown_linux_musl=aarch64-linux-gnu-g++
+          export AR_aarch64_unknown_linux_musl=aarch64-linux-gnu-ar
+          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
+        fi
+        cargo build --release --target ${{ matrix.target }}
 
     - name: Debug and create tarball
       run: |
