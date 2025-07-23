@@ -188,14 +188,16 @@ your-project/
 
 **Without off-context:**
 ```
-Day 1: "Set up FastAPI with PostgreSQL"
-Day 2: "Add authentication" → Claude asks what database you're using
+Monday: "The payment gateway timeout issue was caused by webhook retries"
+Tuesday: "Payment failing again" → Claude suggests generic debugging, you re-explain webhook issue
+Friday: "Customer says payment stuck" → You re-explain the timeout/retry problem again
 ```
 
 **With off-context:**
 ```  
-Day 1: "Set up FastAPI with PostgreSQL"
-Day 2: "Add authentication" → Claude remembers PostgreSQL setup from Day 1
+Monday: "The payment gateway timeout issue was caused by webhook retries"  
+Tuesday: "Payment failing again" → Claude immediately checks webhook retry logic
+Friday: "Customer says payment stuck" → Claude references Monday's webhook timeout diagnosis
 ```
 
 ## Requirements
