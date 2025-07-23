@@ -1,5 +1,9 @@
 # off-context
 
+[![Release](https://img.shields.io/github/v/release/thiagomendes/off-context-cli)](https://github.com/thiagomendes/off-context-cli/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/thiagomendes/off-context-cli/off-context-cli-release.yml)](https://github.com/thiagomendes/off-context-cli/actions)
+[![License](https://img.shields.io/github/license/thiagomendes/off-context-cli)](LICENSE)
+
 > **Persistent memory for Claude Code across sessions**
 
 ## Overview
