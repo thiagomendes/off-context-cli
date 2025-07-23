@@ -4,6 +4,10 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/thiagomendes/off-context-cli/off-context-cli-release.yml)](https://github.com/thiagomendes/off-context-cli/actions)
 [![License](https://img.shields.io/github/license/thiagomendes/off-context-cli)](LICENSE)
 
+[![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg)](https://www.rust-lang.org)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-blue)](https://github.com/thiagomendes/off-context-cli/releases)
+[![Architecture](https://img.shields.io/badge/arch-x86__64%20%7C%20arm64-green)](https://github.com/thiagomendes/off-context-cli/releases)
+
 > **Persistent memory for Claude Code across sessions**
 
 ## Overview
