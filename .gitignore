@@ -4,6 +4,9 @@
 *.pdb
 Cargo.lock
 
+# off-context
+*.off_context
+
 # IDE
 .vscode/
 .idea/
@@ -32,6 +35,7 @@ pids
 
 # off-context specific
 .off_context/
+.off-context/
 *.off_context
 config.toml
 

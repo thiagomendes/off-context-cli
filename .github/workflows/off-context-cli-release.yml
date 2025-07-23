@@ -50,12 +50,12 @@ jobs:
           
           # Check if Linux build is enabled (default true for tag pushes)
           if [[ "${{ github.event.inputs.build_linux }}" == "true" || ("${{ github.event_name }}" == "push" && "${{ github.event.inputs.build_linux }}" != "false") ]]; then
-            builds+=('{"os":"ubuntu-latest","target":"x86_64-unknown-linux-musl","artifact_name":"off-context-cli","asset_name":"off-context-linux.tar.gz"}')
+            builds+=('{"os":"ubuntu-latest","target":"x86_64-unknown-linux-musl","artifact_name":"off-context","asset_name":"off-context-linux.tar.gz"}')
           fi
           
           # Check if macOS build is enabled (default true for tag pushes)
           if [[ "${{ github.event.inputs.build_macos }}" == "true" || ("${{ github.event_name }}" == "push" && "${{ github.event.inputs.build_macos }}" != "false") ]]; then
-            builds+=('{"os":"macos-latest","target":"x86_64-apple-darwin","artifact_name":"off-context-cli","asset_name":"off-context-macos.tar.gz"}')
+            builds+=('{"os":"macos-latest","target":"x86_64-apple-darwin","artifact_name":"off-context","asset_name":"off-context-macos.tar.gz"}')
           fi
           
           # Join builds with commas
