@@ -1,8 +1,8 @@
 [package]
 name = "off-context-cli"
-version = "0.1.0"
+version = "1.0.2"
 edition = "2021"
-authors = ["off-context contributors"]
+authors = ["Thiago Mendes"]
 description = "Claude Code Memory System using Official Hooks"
 license = "MIT"
 repository = "https://github.com/user/off-context-cli"
