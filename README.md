@@ -146,6 +146,8 @@ off-context clear
 
 **vs MCP:** No external servers, API keys, or complex configurations. Just local files and Claude Code's built-in hook system.
 
+**vs CLAUDE.md:** Captures dynamic conversations automatically - no need to manually update markdown files with every small detail, temporary decision, or daily troubleshooting session.
+
 ### Information Flow Diagram
 
 ```mermaid
